@@ -39,19 +39,17 @@ def lora_model():
             )
             #加载预训练权重到lora中
             lora_layer.load_state_dict(module_state_dict,strict=False)
-            #xx = lora_layer.state_dict()
-            # #设置可训练的参数
-            # for n, p in lora_layer.named_parameters():
-            #     if 'lora' in n:
-            #         p.requires_grad = True
-            #进行替换
+            #lora_layer替代q,v的全连接层
             _set_module(model, submodule_key, lora_layer)
-    return model
+            #设置可训练参数
+    return model,preprocess
 
-def add_trainable_params(model):
+def set_trainable_params(model):
     for n, p in model.parameters():
         if 'lora_' in n:
             p.requires_grad = True
         else:
             p.requires_grad = False
 
+if __name__=="__main__":
+    lora_model()
